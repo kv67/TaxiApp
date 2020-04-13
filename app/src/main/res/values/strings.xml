@@ -2,4 +2,16 @@
     <string name="app_name">Taxi App</string>
     <string name="driver_btn">driver</string>
     <string name="passenger_btn">passenger</string>
+    <string name="email_hint" translatable="false">Email</string>
+    <string name="name_hint">Name</string>
+    <string name="password_hint">Password</string>
+    <string name="confirm_password_hint">Confirm Password</string>
+    <string name="sign_up_btn">sign up</string>
+    <string name="log_in_link">Log In</string>
+    <string name="empty_email_msg">Please input your email</string>
+    <string name="empty_name_msg">Please input your name</string>
+    <string name="name_length_msg">Name length has to be less than 15</string>
+    <string name="empty_password_msg">Please input your password</string>
+    <string name="password_length_msg">Password length has to be more than 5</string>
+    <string name="passwords_match_msg">Passwords have to match</string>
 </resources>
