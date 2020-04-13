@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Заказ такси</string>
+    <string name="driver_btn">водитель</string>
+    <string name="passenger_btn">пассажир</string>
+</resources>

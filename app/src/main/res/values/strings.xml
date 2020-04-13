@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Taxi App</string>
+    <string name="driver_btn">driver</string>
+    <string name="passenger_btn">passenger</string>
 </resources>
