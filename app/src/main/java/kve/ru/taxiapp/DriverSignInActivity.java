@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -17,6 +18,8 @@ public class DriverSignInActivity extends AppCompatActivity {
   private TextInputLayout textInputConfirmPassword;
   private Button buttonLogin;
   private TextView textViewLogin;
+
+  private boolean isLogInModeActive = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -80,8 +83,26 @@ public class DriverSignInActivity extends AppCompatActivity {
   }
 
   public void signInLogInUser(View view) {
+    if (!validateEmail() | !validateName() | !validatePassword()) {
+      return;
+    } else {
+      Toast.makeText(this, "OK", Toast.LENGTH_LONG).show();
+    }
   }
 
   public void toggleSignInLogIn(View view) {
+    if (isLogInModeActive) {
+      isLogInModeActive = false;
+      buttonLogin.setText(R.string.sign_up_btn);
+      textViewLogin.setText(R.string.log_in_link);
+      textInputName.setVisibility(View.VISIBLE);
+      textInputConfirmPassword.setVisibility(View.VISIBLE);
+    } else {
+      isLogInModeActive = true;
+      buttonLogin.setText(R.string.log_in_link);
+      textViewLogin.setText(R.string.sign_up_btn);
+      textInputName.setVisibility(View.GONE);
+      textInputConfirmPassword.setVisibility(View.GONE);
+    }
   }
 }

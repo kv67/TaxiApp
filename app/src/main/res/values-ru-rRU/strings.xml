@@ -6,12 +6,12 @@
     <string name="name_hint">Имя</string>
     <string name="password_hint">Пароль</string>
     <string name="confirm_password_hint">Подтверждение пароля</string>
-    <string name="sign_up_btn">Вход</string>
-    <string name="log_in_link">Регистрация</string>
+    <string name="log_in_link">Вход</string>
     <string name="empty_email_msg">Укажите Ваш Email</string>
     <string name="empty_name_msg">Укажите Ваше имя</string>
     <string name="name_length_msg">Длина имени не должна превышать 15 символов</string>
     <string name="empty_password_msg">Укажите пароль</string>
     <string name="password_length_msg">Длина пароля должна быть больше 5 символов</string>
     <string name="passwords_match_msg">Пароли должны совпадать</string>
+    <string name="sign_up_btn">Регистрация</string>
 </resources>
