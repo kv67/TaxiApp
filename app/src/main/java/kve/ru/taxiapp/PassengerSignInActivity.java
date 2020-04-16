@@ -15,7 +15,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 public class PassengerSignInActivity extends AppCompatActivity {
 
@@ -103,7 +102,7 @@ public class PassengerSignInActivity extends AppCompatActivity {
     String email = textInputEmail.getEditText().getText().toString().trim();
     String password = textInputPassword.getEditText().getText().toString().trim();
     if (isLogInModeActive) {
-      if (!validateEmail() | !validatePassword()) {
+      if (!validateEmail() || !validatePassword()) {
         return;
       }
 
@@ -114,20 +113,17 @@ public class PassengerSignInActivity extends AppCompatActivity {
           if (task.isSuccessful()) {
             // Sign in success, update UI with the signed-in user's information
             Log.d(TAG, "signInWithEmail:success");
-            FirebaseUser user = auth.getCurrentUser();
-            // updateUI(user);
           } else {
             // If sign in fails, display a message to the user.
             Log.w(TAG, "signInWithEmail:failure", task.getException());
             Toast.makeText(PassengerSignInActivity.this, R.string.authentication_failed_msg,
                 Toast.LENGTH_SHORT).show();
-            // updateUI(null);
           }
         }
       });
 
     } else {
-      if (!validateEmail() | !validateName() | !validatePassword() | !validateConfirmPassword()) {
+      if (!validateEmail() || !validateName() || !validatePassword() || !validateConfirmPassword()) {
         return;
       }
 
@@ -138,14 +134,11 @@ public class PassengerSignInActivity extends AppCompatActivity {
           if (task.isSuccessful()) {
             // Sign in success, update UI with the signed-in user's information
             Log.d(TAG, "createUserWithEmail:success");
-            FirebaseUser user = auth.getCurrentUser();
-            // updateUI(user);
           } else {
             // If sign in fails, display a message to the user.
             Log.w(TAG, "createUserWithEmail:failure", task.getException());
             Toast.makeText(PassengerSignInActivity.this, R.string.authentication_failed_msg,
                 Toast.LENGTH_SHORT).show();
-            // updateUI(null);
           }
         }
       });

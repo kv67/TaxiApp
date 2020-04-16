@@ -1,6 +1,5 @@
 package kve.ru.taxiapp.maps;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -17,8 +16,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -40,10 +42,21 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import kve.ru.taxiapp.BuildConfig;
 import kve.ru.taxiapp.R;
+import kve.ru.taxiapp.SplashScreenActivity;
+
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static com.google.android.gms.common.ConnectionResult.RESOLUTION_REQUIRED;
+import static com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE;
+import static kve.ru.taxiapp.SplashScreenActivity.IS_ACTIVE;
 
 public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -60,6 +73,9 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
   private LocationCallback locationCallback;
   private Location currentLocation;
 
+  private FirebaseAuth auth;
+  private FirebaseUser currentUser;
+
   private boolean isLocationActive = false;
 
   @Override
@@ -74,11 +90,44 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
     fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     settingsClient = LocationServices.getSettingsClient(this);
 
+    auth = FirebaseAuth.getInstance();
+    currentUser = auth.getCurrentUser();
+
+    FloatingActionButton buttonExit = findViewById(R.id.buttonExit);
+    FloatingActionButton buttonSettings = findViewById(R.id.buttonSettings);
+
+    buttonExit.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        auth.signOut();
+        signOutDriver();
+      }
+    });
+
+    buttonSettings.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        //
+      }
+    });
+
     buildLocationRequest();
     buildLocationCallback();
     buildLocationSettingsRequest();
 
     startLocationUpdates();
+  }
+
+  private void signOutDriver() {
+    String driverUserId = currentUser.getUid();
+    DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("drivers");
+    GeoFire geoFire = new GeoFire(ref);
+    geoFire.removeLocation(driverUserId);
+
+    Intent intent = new Intent(DriverMapsActivity.this, SplashScreenActivity.class);
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    intent.putExtra(IS_ACTIVE, true);
+    startActivity(intent);
   }
 
   /**
@@ -103,6 +152,12 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
       mMap.moveCamera(CameraUpdateFactory.newLatLng(driverLocation));
       mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
       mMap.addMarker(new MarkerOptions().position(driverLocation).title(getString(R.string.driver_position_title)));
+
+      String driverUserId = currentUser.getUid();
+      DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("drivers");
+      GeoFire geoFire = new GeoFire(ref);
+      geoFire.setLocation(driverUserId, new GeoLocation(currentLocation.getLatitude(),
+          currentLocation.getLongitude()));
     }
   }
 
@@ -135,7 +190,7 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
         int statusCode = ((ApiException) e).getStatusCode();
 
         switch (statusCode) {
-          case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+          case RESOLUTION_REQUIRED:
             try {
               ResolvableApiException resolvableApiException = (ResolvableApiException) e;
               resolvableApiException.startResolutionForResult(DriverMapsActivity.this,
@@ -148,6 +203,8 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
             Toast.makeText(DriverMapsActivity.this, R.string.adjust_settings_msg,
                 Toast.LENGTH_LONG).show();
             isLocationActive = false;
+            break;
+          default:
             break;
         }
         updateLocationUi();
@@ -167,6 +224,8 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
         case Activity.RESULT_CANCELED:
           Log.d(TAG, "User has NOT agreed to change location settings");
           isLocationActive = false;
+          break;
+        default:
           break;
       }
     }
@@ -214,31 +273,27 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
   }
 
   private void requestLocationPermission() {
-    boolean shouldProvideRationale = ActivityCompat.shouldShowRequestPermissionRationale(this,
-        Manifest.permission.ACCESS_FINE_LOCATION);
+    boolean shouldProvideRationale = ActivityCompat.shouldShowRequestPermissionRationale(this, ACCESS_FINE_LOCATION);
     if (shouldProvideRationale) {
       showSnackBar(getString(R.string.permission_reason_msg), getString(R.string.ok_title),
           new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-          ActivityCompat.requestPermissions(DriverMapsActivity.this,
-              new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
+          ActivityCompat.requestPermissions(DriverMapsActivity.this, new String[]{ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
         }
       });
     } else {
-      ActivityCompat.requestPermissions(DriverMapsActivity.this,
-          new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
+      ActivityCompat.requestPermissions(DriverMapsActivity.this, new String[]{ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
     }
   }
 
   private void showSnackBar(final String mainText, final String action,
       View.OnClickListener listener) {
-    Snackbar.make(findViewById(android.R.id.content), mainText, Snackbar.LENGTH_INDEFINITE).setAction(action, listener).show();
+    Snackbar.make(findViewById(android.R.id.content), mainText, LENGTH_INDEFINITE).setAction(action, listener).show();
   }
 
   private boolean checkLocationPermission() {
-    int permissionState = ActivityCompat.checkSelfPermission(this,
-        Manifest.permission.ACCESS_FINE_LOCATION);
+    int permissionState = ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION);
     return permissionState == PackageManager.PERMISSION_GRANTED;
   }
 

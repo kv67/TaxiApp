@@ -3,25 +3,34 @@ package kve.ru.taxiapp;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+
+import kve.ru.taxiapp.maps.DriverMapsActivity;
+
 import static java.lang.Thread.sleep;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
-  private static final String IS_ACTIVE = "IS_ACTIVE";
+  public static final String IS_ACTIVE = "IS_ACTIVE";
 
   private Button buttonPassenger;
   private Button buttonDriver;
+
+  private FirebaseAuth auth;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_splash_screen);
+
+    auth = FirebaseAuth.getInstance();
 
     buttonPassenger = findViewById(R.id.buttonPassenger);
     buttonDriver = findViewById(R.id.buttonDriver);
@@ -40,21 +49,27 @@ public class SplashScreenActivity extends AppCompatActivity {
       }
     });
 
-    if (savedInstanceState != null && savedInstanceState.containsKey(IS_ACTIVE) && savedInstanceState.getBoolean(IS_ACTIVE)) {
-      buttonPassenger.setVisibility(View.VISIBLE);
-      buttonDriver.setVisibility(View.VISIBLE);
+    if ((savedInstanceState != null && savedInstanceState.containsKey(IS_ACTIVE) && savedInstanceState.getBoolean(IS_ACTIVE)) || (getIntent() != null && getIntent().getBooleanExtra(IS_ACTIVE, false))) {
+      initUi();
     } else {
       SplashTask task = new SplashTask();
       task.setOnFinishListener(new SplashTask.OnFinishListener() {
         @Override
         public void onFinish() {
-          buttonPassenger.setVisibility(View.VISIBLE);
-          buttonDriver.setVisibility(View.VISIBLE);
+          initUi();
         }
       });
       task.execute();
     }
 
+  }
+
+  private void initUi() {
+    buttonPassenger.setVisibility(View.VISIBLE);
+    buttonDriver.setVisibility(View.VISIBLE);
+    if (auth.getCurrentUser() != null) {
+      startActivity(new Intent(SplashScreenActivity.this, DriverMapsActivity.class));
+    }
   }
 
   @Override
@@ -64,6 +79,7 @@ public class SplashScreenActivity extends AppCompatActivity {
   }
 
   private static class SplashTask extends AsyncTask<Void, Void, Void> {
+    private static final String TAG = "SplashTask";
 
     private OnFinishListener onFinishListener;
 
@@ -76,7 +92,7 @@ public class SplashScreenActivity extends AppCompatActivity {
       try {
         sleep(5000);
       } catch (Exception e) {
-        e.printStackTrace();
+        Log.e(TAG, "Sleep error", e);
       }
       return null;
     }
