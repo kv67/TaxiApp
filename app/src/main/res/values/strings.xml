@@ -14,4 +14,12 @@
     <string name="empty_password_msg">Please input your password</string>
     <string name="password_length_msg">Password length has to be more than 5</string>
     <string name="passwords_match_msg">Passwords have to match</string>
+    <string name="authentication_failed_msg">Authentication failed.</string>
+    <string name="title_activity_driver_maps">Map</string>
+    <string name="adjust_settings_msg">Adjust location settings on your device</string>
+    <string name="permission_reason_msg">Location permission is needed for app functionality</string>
+    <string name="ok_title">OK</string>
+    <string name="turn_on_settings_msg">Turn on location on settings</string>
+    <string name="settings_title">Settings</string>
+    <string name="driver_position_title">Driver position</string>
 </resources>

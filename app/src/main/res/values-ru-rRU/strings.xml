@@ -14,4 +14,12 @@
     <string name="password_length_msg">Длина пароля должна быть больше 5 символов</string>
     <string name="passwords_match_msg">Пароли должны совпадать</string>
     <string name="sign_up_btn">Регистрация</string>
+    <string name="adjust_settings_msg">Настройте параметры геолокации на Вашем устройстве</string>
+    <string name="title_activity_driver_maps">Карта</string>
+    <string name="ok_title">ОК</string>
+    <string name="authentication_failed_msg">Ошибка авторизации</string>
+    <string name="permission_reason_msg">Разрешение геолокации необходимо для работы приложения</string>
+    <string name="turn_on_settings_msg">Включите геолокацию в настройках</string>
+    <string name="settings_title">Настройки</string>
+    <string name="driver_position_title">Водитель</string>
 </resources>

@@ -1,16 +1,28 @@
 package kve.ru.taxiapp;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import kve.ru.taxiapp.maps.DriverMapsActivity;
 
 public class DriverSignInActivity extends AppCompatActivity {
+
+  private static final String TAG = "DriverSignInActivity";
 
   private TextInputLayout textInputEmail;
   private TextInputLayout textInputName;
@@ -20,6 +32,8 @@ public class DriverSignInActivity extends AppCompatActivity {
   private TextView textViewLogin;
 
   private boolean isLogInModeActive = false;
+
+  private FirebaseAuth auth = FirebaseAuth.getInstance();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +78,6 @@ public class DriverSignInActivity extends AppCompatActivity {
 
   private boolean validatePassword() {
     String password = textInputPassword.getEditText().getText().toString().trim();
-    String confirmPassword = textInputConfirmPassword.getEditText().getText().toString().trim();
     if (password == null || password.isEmpty()) {
       textInputPassword.setError(getString(R.string.empty_password_msg));
       return false;
@@ -72,21 +85,76 @@ public class DriverSignInActivity extends AppCompatActivity {
       if (password.length() < 6) {
         textInputPassword.setError(getString(R.string.password_length_msg));
         return false;
-      } else
-        if (!password.equals(confirmPassword)) {
-          textInputPassword.setError(getString(R.string.passwords_match_msg));
-          return false;
-        } else {
-          textInputPassword.setError("");
-          return true;
-        }
+      } else {
+        textInputPassword.setError("");
+        return true;
+      }
+  }
+
+  private boolean validateConfirmPassword() {
+    String password = textInputPassword.getEditText().getText().toString().trim();
+    String confirmPassword = textInputConfirmPassword.getEditText().getText().toString().trim();
+    if (!password.equals(confirmPassword)) {
+      textInputPassword.setError(getString(R.string.passwords_match_msg));
+      return false;
+    } else {
+      textInputPassword.setError("");
+      return true;
+    }
   }
 
   public void signInLogInUser(View view) {
-    if (!validateEmail() | !validateName() | !validatePassword()) {
-      return;
+    String email = textInputEmail.getEditText().getText().toString().trim();
+    String password = textInputPassword.getEditText().getText().toString().trim();
+    if (isLogInModeActive) {
+      if (!validateEmail() | !validatePassword()) {
+        return;
+      }
+
+      auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this,
+          new OnCompleteListener<AuthResult>() {
+        @Override
+        public void onComplete(@NonNull Task<AuthResult> task) {
+          if (task.isSuccessful()) {
+            // Sign in success, update UI with the signed-in user's information
+            Log.d(TAG, "signInWithEmail:success");
+            FirebaseUser user = auth.getCurrentUser();
+            startActivity(new Intent(DriverSignInActivity.this, DriverMapsActivity.class));
+            // updateUI(user);
+          } else {
+            // If sign in fails, display a message to the user.
+            Log.w(TAG, "signInWithEmail:failure", task.getException());
+            Toast.makeText(DriverSignInActivity.this, R.string.authentication_failed_msg,
+                Toast.LENGTH_SHORT).show();
+            // updateUI(null);
+          }
+        }
+      });
+
     } else {
-      Toast.makeText(this, "OK", Toast.LENGTH_LONG).show();
+      if (!validateEmail() | !validateName() | !validatePassword() | !validateConfirmPassword()) {
+        return;
+      }
+
+      auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this,
+          new OnCompleteListener<AuthResult>() {
+        @Override
+        public void onComplete(@NonNull Task<AuthResult> task) {
+          if (task.isSuccessful()) {
+            // Sign in success, update UI with the signed-in user's information
+            Log.d(TAG, "createUserWithEmail:success");
+            FirebaseUser user = auth.getCurrentUser();
+            startActivity(new Intent(DriverSignInActivity.this, DriverMapsActivity.class));
+            // updateUI(user);
+          } else {
+            // If sign in fails, display a message to the user.
+            Log.w(TAG, "createUserWithEmail:failure", task.getException());
+            Toast.makeText(DriverSignInActivity.this, R.string.authentication_failed_msg,
+                Toast.LENGTH_SHORT).show();
+            // updateUI(null);
+          }
+        }
+      });
     }
   }
 
