@@ -22,4 +22,6 @@
     <string name="turn_on_settings_msg">Turn on location on settings</string>
     <string name="settings_title">Settings</string>
     <string name="driver_position_title">Driver position</string>
+    <string name="title_activity_passenger_maps">Map</string>
+    <string name="passenger_position_title">Passenger position</string>
 </resources>

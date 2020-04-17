@@ -1,5 +1,6 @@
 package kve.ru.taxiapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +16,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+
+import kve.ru.taxiapp.maps.DriverMapsActivity;
+import kve.ru.taxiapp.maps.PassengerMapsActivity;
 
 public class PassengerSignInActivity extends AppCompatActivity {
 
@@ -36,11 +40,14 @@ public class PassengerSignInActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_passenger_sign_in);
 
+    if (auth.getCurrentUser() != null) {
+      startActivity(new Intent(PassengerSignInActivity.this, DriverMapsActivity.class));
+    }
+
     textInputEmail = findViewById(R.id.textInputEmail);
     textInputName = findViewById(R.id.textInputName);
     textInputPassword = findViewById(R.id.textInputPassword);
     textInputConfirmPassword = findViewById(R.id.textInputConfirmPassword);
-
     buttonLogin = findViewById(R.id.buttonLogin);
     textViewLogin = findViewById(R.id.textViewLogin);
   }
@@ -113,6 +120,7 @@ public class PassengerSignInActivity extends AppCompatActivity {
           if (task.isSuccessful()) {
             // Sign in success, update UI with the signed-in user's information
             Log.d(TAG, "signInWithEmail:success");
+            startActivity(new Intent(PassengerSignInActivity.this, PassengerMapsActivity.class));
           } else {
             // If sign in fails, display a message to the user.
             Log.w(TAG, "signInWithEmail:failure", task.getException());
@@ -134,6 +142,7 @@ public class PassengerSignInActivity extends AppCompatActivity {
           if (task.isSuccessful()) {
             // Sign in success, update UI with the signed-in user's information
             Log.d(TAG, "createUserWithEmail:success");
+            startActivity(new Intent(PassengerSignInActivity.this, PassengerMapsActivity.class));
           } else {
             // If sign in fails, display a message to the user.
             Log.w(TAG, "createUserWithEmail:failure", task.getException());

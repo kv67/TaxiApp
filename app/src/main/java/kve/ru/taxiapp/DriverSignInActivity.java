@@ -27,6 +27,7 @@ public class DriverSignInActivity extends AppCompatActivity {
   private TextInputLayout textInputName;
   private TextInputLayout textInputPassword;
   private TextInputLayout textInputConfirmPassword;
+
   private Button buttonLogin;
   private TextView textViewLogin;
 
@@ -39,14 +40,16 @@ public class DriverSignInActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_driver_sign_in);
 
+    if (auth.getCurrentUser() != null) {
+      startActivity(new Intent(DriverSignInActivity.this, DriverMapsActivity.class));
+    }
+
     textInputEmail = findViewById(R.id.textInputEmail);
     textInputName = findViewById(R.id.textInputName);
     textInputPassword = findViewById(R.id.textInputPassword);
     textInputConfirmPassword = findViewById(R.id.textInputConfirmPassword);
-
     buttonLogin = findViewById(R.id.buttonLogin);
     textViewLogin = findViewById(R.id.textViewLogin);
-
   }
 
   private boolean validateEmail() {

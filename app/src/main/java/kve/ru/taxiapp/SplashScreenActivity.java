@@ -10,10 +10,6 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.auth.FirebaseAuth;
-
-import kve.ru.taxiapp.maps.DriverMapsActivity;
-
 import static java.lang.Thread.sleep;
 
 public class SplashScreenActivity extends AppCompatActivity {
@@ -23,14 +19,10 @@ public class SplashScreenActivity extends AppCompatActivity {
   private Button buttonPassenger;
   private Button buttonDriver;
 
-  private FirebaseAuth auth;
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_splash_screen);
-
-    auth = FirebaseAuth.getInstance();
 
     buttonPassenger = findViewById(R.id.buttonPassenger);
     buttonDriver = findViewById(R.id.buttonDriver);
@@ -67,9 +59,6 @@ public class SplashScreenActivity extends AppCompatActivity {
   private void initUi() {
     buttonPassenger.setVisibility(View.VISIBLE);
     buttonDriver.setVisibility(View.VISIBLE);
-    if (auth.getCurrentUser() != null) {
-      startActivity(new Intent(SplashScreenActivity.this, DriverMapsActivity.class));
-    }
   }
 
   @Override
