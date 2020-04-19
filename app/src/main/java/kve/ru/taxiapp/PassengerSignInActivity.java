@@ -17,7 +17,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
-import kve.ru.taxiapp.maps.DriverMapsActivity;
 import kve.ru.taxiapp.maps.PassengerMapsActivity;
 
 public class PassengerSignInActivity extends AppCompatActivity {
@@ -41,7 +40,7 @@ public class PassengerSignInActivity extends AppCompatActivity {
     setContentView(R.layout.activity_passenger_sign_in);
 
     if (auth.getCurrentUser() != null) {
-      startActivity(new Intent(PassengerSignInActivity.this, DriverMapsActivity.class));
+      startActivity(new Intent(PassengerSignInActivity.this, PassengerMapsActivity.class));
     }
 
     textInputEmail = findViewById(R.id.textInputEmail);

@@ -37,6 +37,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -63,9 +64,11 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
   private static final int CHECK_SETTINGS_CODE = 111;
   private static final int REQUEST_LOCATION_PERMISSION = 222;
   private static final String TAG = "DriverMapsActivity";
+  public static final String DRIVERS_GEO_FIRE = "driversGeoFire";
   private static final String DRIVERS = "drivers";
 
   private GoogleMap mMap;
+  private Marker curMarker;
 
   private FusedLocationProviderClient fusedLocationClient;
   private SettingsClient settingsClient;
@@ -86,7 +89,9 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
     // Obtain the SupportMapFragment and get notified when the map is ready to be used.
     SupportMapFragment mapFragment =
         (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-    mapFragment.getMapAsync(this);
+    if (mapFragment != null) {
+      mapFragment.getMapAsync(this);
+    }
 
     fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     settingsClient = LocationServices.getSettingsClient(this);
@@ -121,7 +126,7 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
 
   private void signOutDriver() {
     String driverUserId = currentUser.getUid();
-    DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(DRIVERS);
+    DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(DRIVERS_GEO_FIRE);
     GeoFire geoFire = new GeoFire(ref);
     geoFire.removeLocation(driverUserId);
 
@@ -131,15 +136,6 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
     startActivity(intent);
   }
 
-  /**
-   * Manipulates the map once available.
-   * This callback is triggered when the map is ready to be used.
-   * This is where we can add markers or lines, add listeners or move the camera. In this case,
-   * we just add a marker near Sydney, Australia.
-   * If Google Play services is not installed on the device, the user will be prompted to install
-   * it inside the SupportMapFragment. This method will only be triggered once the user has
-   * installed Google Play services and returned to the app.
-   */
   @Override
   public void onMapReady(GoogleMap googleMap) {
     mMap = googleMap;
@@ -150,13 +146,22 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
     if (currentLocation != null) {
       LatLng driverLocation = new LatLng(currentLocation.getLatitude(),
           currentLocation.getLongitude());
+
+      if (curMarker != null) {
+        curMarker.remove();
+      }
+
       mMap.moveCamera(CameraUpdateFactory.newLatLng(driverLocation));
-      mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
-      mMap.addMarker(new MarkerOptions().position(driverLocation).title(getString(R.string.driver_position_title)));
+      mMap.animateCamera(CameraUpdateFactory.zoomTo(16));
+      curMarker =
+          mMap.addMarker(new MarkerOptions().position(driverLocation).title(getString(R.string.driver_position_title)));
 
       String driverUserId = currentUser.getUid();
-      DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(DRIVERS);
-      GeoFire geoFire = new GeoFire(ref);
+      DatabaseReference driversRef = FirebaseDatabase.getInstance().getReference().child(DRIVERS);
+      driversRef.setValue(true);
+      DatabaseReference geoFireRef =
+          FirebaseDatabase.getInstance().getReference().child(DRIVERS_GEO_FIRE);
+      GeoFire geoFire = new GeoFire(geoFireRef);
       geoFire.setLocation(driverUserId, new GeoLocation(currentLocation.getLatitude(),
           currentLocation.getLongitude()));
     }

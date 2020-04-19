@@ -24,4 +24,8 @@
     <string name="driver_position_title">Водитель</string>
     <string name="title_activity_passenger_maps">Карта</string>
     <string name="passenger_position_title">Пассажир</string>
+    <string name="driver_here_msg">Ваш водитель здесь</string>
+    <string name="getting_taxi_state">Поиск такси...</string>
+    <string name="getting_driver_location_state">Определение местоположения такси...</string>
+    <string name="distance_to_driver_state">Расстояние до машины: %.0f</string>
 </resources>

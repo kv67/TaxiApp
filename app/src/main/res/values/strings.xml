@@ -24,4 +24,8 @@
     <string name="driver_position_title">Driver position</string>
     <string name="title_activity_passenger_maps">Map</string>
     <string name="passenger_position_title">Passenger position</string>
+    <string name="driver_here_msg">Your driver is here</string>
+    <string name="getting_taxi_state">Getting your taxi...</string>
+    <string name="getting_driver_location_state">Getting your driver location...</string>
+    <string name="distance_to_driver_state">Distance to driver: %.0f</string>
 </resources>
